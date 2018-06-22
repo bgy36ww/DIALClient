@@ -1,6 +1,6 @@
 import requests
-from client import app
-from client import parser
+from dial_client import app
+from dial_client import parser
 
 
 class Device(requests.Session):
