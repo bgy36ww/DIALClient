@@ -6,13 +6,14 @@ def ParseResponse(responses):
   """extract M-Search info from HTTP responses"""
   maps = []
   for response in responses:
-    # The reason we are doing this here is that some TVs will do random \r or \n inside their response.
-    response = response.replace('\r', '')
-    lines = response.split('\n')
+    lines = response.split('\r\n')
     fields = {}
     for line in lines:
       line = CleanText(line)
-      key, value = line.split(': ', 1)
+      try:
+          key, value = line.split(': ', 1)
+      except ValueError:
+          continue
       # not a pair
       if not key or not value:
         continue

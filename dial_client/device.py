@@ -1,6 +1,7 @@
 import requests
-from client import app
-from client import parser
+from requests.exceptions import HTTPError
+from dial_client import app
+from dial_client import parser
 
 
 class Device(requests.Session):
@@ -29,7 +30,7 @@ class Device(requests.Session):
     # HTTP Header names are case-insensitive
     # headers dictionary take care of that
     info = self.get(self.location)
-    self.app_url = self._AppUrlHandling(info.headers.get('application-url'))
+    self.app_url = _AppUrlHandling(info.headers.get('application-url'))
     device_tree = parser.ParseDeviceTree(info.content)
     self.friendly_name = device_tree['friendlyName']
     self.model_name = device_tree['modelName']
@@ -44,7 +45,7 @@ class Device(requests.Session):
       application_name: The application name in string you want to check, it's different for each app.
           The registry of App can be find here:
           http://www.dial-multiscreen.org/dial-registry/namespace-database
-          If this is empty, GetApp will find the current or the latest running app on TV.
+          If this is empty, GetApp on some Devices can find the current or the latest running app on TV.
       dial_version: New in Protocol 2.1, can be use in the future to specify which DIAL version you want.
 
     Return:
@@ -54,8 +55,7 @@ class Device(requests.Session):
     if dial_version:
       dial_version = '?clientDialVer=' + dial_version
     info = self.get(self.app_url + '/' + application_name + dial_version)
-    if info.status_code != 200:
-      return None
+    info.raise_for_status()
     return app.App(info.content)
 
   def Launch(self, application_name, args=''):
@@ -68,7 +68,6 @@ class Device(requests.Session):
     Returns:
       The http response from the device.
     """
-    self.Close()
     return self.post(self.app_url + '/' + application_name, args)
 
   def Close(self, application_name=''):
@@ -81,11 +80,15 @@ class Device(requests.Session):
     Returns:
       The http response from the device.
     """
+    application = self.GetApp(application_name)
     if not application_name:
-      application = self.GetApp()
-      application_name = ''
-      if application is not None:
-        application_name = application.name
+      try:
+          application_name = ''
+          if application is not None:
+              application_name = application.name
+      except HTTPError:
+          print('No Active App')
+          raise
     return self.delete(self.app_url + '/' + application_name + '/' + _HandleHref(application.link['href']));
 
 # TODO add more cases in the future

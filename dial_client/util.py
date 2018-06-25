@@ -1,6 +1,6 @@
-from client import parser
-from client import ssdp
-from client import device
+from dial_client import parser
+from dial_client import ssdp
+from dial_client import device
 
 """Client module for managing device property and connection control"""
 

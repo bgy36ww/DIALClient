@@ -1,4 +1,4 @@
-from client import parser
+from dial_client import parser
 
 
 class App(object):
