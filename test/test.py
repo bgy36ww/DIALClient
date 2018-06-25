@@ -8,3 +8,4 @@ for client in clients:
     client.Launch('Netflix')
     time.sleep(10)
     client.Close('Netflix')
+    print(client.friendly_name)

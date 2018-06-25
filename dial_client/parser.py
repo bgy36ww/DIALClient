@@ -91,6 +91,9 @@ def ParseAppTree(content):
          'options': ParseForAttrib(root_tree, nsmap, 'options'),
          'state': ParseTreeNode(root_tree, nsmap, 'state'), }
   link_dic = ParseForAttrib(root_tree, nsmap, 'link')
+  """if href data is not available on device"""
+  if 'href' not in link_dic:
+      link_dic['href'] = run
   additional_data = root_tree.find('default:additionalData', nsmap)
   additional_data_dic = {}
   if additional_data is not None:
