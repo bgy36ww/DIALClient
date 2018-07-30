@@ -7,13 +7,13 @@ from dial_client import device
 
 # TODO make integration here in the future
 
-def CaptureDevices():
+def CaptureDevices(time=5):
   """This provides a basic usage of this library.
    It Starts the Discovery service and finds available devices.
    Returns a list of device module defined by device.py
   """
   discover_service = ssdp.Discover()
-  res = discover_service.GetDeviceResponse()
+  res = discover_service.GetDeviceResponse(time)
   parsed_data = parser.ParseResponse(res)
   sample_devices = []
   for data in parsed_data:

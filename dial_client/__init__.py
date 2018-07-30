@@ -1,3 +1,3 @@
-from .client import CaptureDevices
+from .util import CaptureDevices
 
 __all__ = ['CaptureDevices']

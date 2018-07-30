@@ -5,7 +5,4 @@ for client in clients:
     client.Launch('YouTube')
     time.sleep(10)
     client.Close('YouTube')
-    client.Launch('Netflix')
-    time.sleep(10)
-    client.Close('Netflix')
     print(client.friendly_name)

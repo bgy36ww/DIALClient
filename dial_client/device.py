@@ -26,7 +26,10 @@ class Device(requests.Session):
     self.location = response['location']
     self.st = response['st']
     self.usn = response['usn']
-    self.wakeup = response['wakeup']
+    if 'wakeup' in response.keys():
+        self.wakeup = response['wakeup']
+    else:
+        self.wakeup = ''
     # HTTP Header names are case-insensitive
     # headers dictionary take care of that
     info = self.get(self.location)

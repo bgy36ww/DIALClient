@@ -6,7 +6,7 @@ import select
 
 SSDP_PORT = 1900
 SSDP_ADDR = '239.255.255.250'
-SSDP_ST = 'ST: ​urn:dial-multiscreen-org:service:dial:1'
+SSDP_ST = 'ST: urn:dial-multiscreen-org:service:dial:1'
 SSDP_MX = '10'
 # socket timeout as 0 second
 SO_TIMEOUT = 0.0
@@ -28,7 +28,7 @@ class Discover(object):
     self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     self._socket.settimeout(SO_TIMEOUT)
 
-  def GetDeviceResponse(self, timeout=3):
+  def GetDeviceResponse(self, timeout=5):
     """Discovery function, which starts the discovery process.
     timeout after timeout is met
 
