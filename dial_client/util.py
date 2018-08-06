@@ -16,7 +16,11 @@ def CaptureDevices(time=5):
   res = discover_service.GetDeviceResponse(time)
   parsed_data = parser.ParseResponse(res)
   sample_devices = []
+  location_map = {}
   for data in parsed_data:
     sample_device = device.Device(data)
+    if sample_device.location in location_map.keys():
+      continue
+    location_map[sample_device.location] = sample_device
     sample_devices.append(sample_device)
   return sample_devices
