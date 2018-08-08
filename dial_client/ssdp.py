@@ -14,19 +14,20 @@ SO_TIMEOUT = 0.0
 
 class Discover(object):
   """Simple Search and Discovery class"""
-  def __init__(self):
+  def __init__(self, binding_address=''):
     msearch = 'M-SEARCH * HTTP/1.1'
     host = 'HOST: ' + SSDP_ADDR + ':' + str(SSDP_PORT)
     man = 'MAN: "ssdp:discover"'
     mx = 'MX: ' + SSDP_MX
     st = SSDP_ST
     rn = '\r\n'
-
     self._request_string = msearch + rn + host + rn + man + \
                            rn + mx + rn + st + rn + rn
     # using ipv4 address and datagram-based protocol
     self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     self._socket.settimeout(SO_TIMEOUT)
+    if binding_address:
+      self._socket.bind((binding_address, 0))
 
   def GetDeviceResponse(self, timeout=5):
     """Discovery function, which starts the discovery process.

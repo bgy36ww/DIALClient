@@ -22,14 +22,11 @@ class Device(requests.Session):
   """
 
   def __init__(self, response):
-    super().__init__()
+    super(Device, self).__init__()
     self.location = response['location']
     self.st = response['st']
     self.usn = response['usn']
-    if 'wakeup' in response.keys():
-      self.wakeup = response['wakeup']
-    else:
-      self.wakeup = ''
+    self.wakeup = response.get('wakeup', '')
     # HTTP Header names are case-insensitive
     # headers dictionary take care of that
     info = self.get(self.location)
@@ -94,6 +91,9 @@ class Device(requests.Session):
       raise
     if not application_name:
       application_name = application.name
+    if application.state == 'stopped':
+      print('Application is not running. Nothing to do.')
+      return None
     return self.delete(self.app_url + '/' + application_name + '/' + _HandleHref(application.link['href']));
 
 # TODO add more cases in the future
