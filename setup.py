@@ -28,6 +28,6 @@ setup(
     'Programming Language :: Python :: 3.6',
   ],
   packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-  install_requires=['', 'requests', 'untangle', 'lxml'],
+  install_requires=['', 'requests', 'untangle', 'lxml', 'wakeonlan'],
   include_package_data=True,
 )
