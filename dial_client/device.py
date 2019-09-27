@@ -69,7 +69,10 @@ class Device(requests.Session):
     Returns:
       The http response from the device.
     """
-    self.Close(application_name)
+    try:
+        self.Close(application_name)
+    except Exception as e:
+        print(e)
     if len(args) == 0:
       self.headers['Content-Length'] = '0'
     return self.post(self.app_url + '/' + application_name, args)
