@@ -1,7 +1,9 @@
 import requests
+import re
 from requests.exceptions import HTTPError
 from dial_client import app
 from dial_client import parser
+from wakeonlan import send_magic_packet
 
 
 class Device(requests.Session):
@@ -27,6 +29,7 @@ class Device(requests.Session):
     self.st = response['st']
     self.usn = response['usn']
     self.wakeup = response.get('wakeup', '')
+    self.mac = re.search(r'([0-9A-F]{2}[:-]){5}([0-9A-F]{2})', self.wakeup, re.I)
     # HTTP Header names are case-insensitive
     # headers dictionary take care of that
     info = self.get(self.location)
@@ -58,6 +61,35 @@ class Device(requests.Session):
     info = self.get(self.app_url + '/' + application_name + dial_version)
     info.raise_for_status()
     return app.App(info.content)
+
+  def Sleep(self, key=''):
+    """Sets the Device to Low Power Mode.
+
+    This is added in DIAL 2.2, and only works for device that support
+    DIAL 2.2 and after.
+
+    Args:
+      key: An optional secret key for device if required.
+
+    Returns:
+      The http response from this request.
+    """
+    args = 'action=sleep'
+    if key:
+      args += '&key=' + key
+    else:
+      self.headers['Content-Length'] = '0'
+    return self.post(self.app_url, args)
+
+  def Wake(self):
+    """Wakes up the device using Wol protocol
+
+    All device supported DIAL should be able to support Wol protocol
+
+    Returns:
+      The http response from this request.
+    """
+    send_magic_packet(self.mac)
 
   def Launch(self, application_name, args=''):
     """Launches a installed device app
@@ -111,3 +143,18 @@ def _HandleHref(url):
   we use a universal way to parse them
   """
   return url.rstrip('/').split('/')[-1]
+
+def CreateMagicPacket(wakeup):
+  """Converts the Wakeup parameter intp a Wol packet
+
+  https://en.wikipedia.org/wiki/Wake-on-LAN
+
+  Returns:
+    The magic packet for waking up device through Wol protocol.
+  """
+  mac = re.search(r'([0-9A-F]{2}[:-]){5}([0-9A-F]{2})', wakeup, re.I)
+  mac = mac.replace(':', '')
+  mac = mac.replace('-', '')
+  if len(mac) != 12:
+    raise ValueError('Incorrect format of Mac address or Wakeup')
+  return b'FFFFFFFFFFFF' + mac.encode()
