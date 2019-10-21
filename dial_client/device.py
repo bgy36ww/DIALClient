@@ -29,7 +29,7 @@ class Device(requests.Session):
     self.st = response['st']
     self.usn = response['usn']
     self.wakeup = response.get('wakeup', '')
-    self.mac = re.search(r'([0-9A-F]{2}[:-]){5}([0-9A-F]{2})', self.wakeup, re.I)
+    self.mac = re.search(r'([0-9A-F]{2}[:-]){5}([0-9A-F]{2})', self.wakeup, re.I)[0]
     # HTTP Header names are case-insensitive
     # headers dictionary take care of that
     info = self.get(self.location)
